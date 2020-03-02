@@ -1,0 +1,182 @@
+\documentclass[final]{beamer}
+\usepackage{grffile}
+\mode<presentation>{\usetheme{CambridgeUSPOL}}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{array,booktabs,tabularx}
+\usepackage{epstopdf}
+\usepackage{colortbl, xcolor}
+\usepackage{ragged2e}
+\newcolumntype{Z}{>{\centering\arraybackslash}X}
+
+% rysunki
+\usepackage{tikz}
+\usepackage{ifthen}
+\usepackage{xxcolor}
+\usetikzlibrary{arrows}
+\usetikzlibrary[topaths]
+\usetikzlibrary{decorations.pathreplacing}
+%\usepackage{times}\usefonttheme{professionalfonts}  % times is obsolete
+\usefonttheme[onlymath]{serif}
+\boldmath
+\usepackage[orientation=portrait,size=a0,scale=1.4,debug]{beamerposter}                       % e.g. for DIN-A0 poster
+%\usepackage[orientation=portrait,size=a1,scale=1.4,grid,debug]{beamerposter}                  % e.g. for DIN-A1 poster, with optional grid and debug output
+%\usepackage[size=custom,width=200,height=120,scale=2,debug]{beamerposter}                     % e.g. for custom size poster
+%\usepackage[orientation=portrait,size=a0,scale=1.0,printer=rwth-glossy-uv.df]{beamerposter}   % e.g. for DIN-A0 poster with rwth-glossy-uv printer check
+% ...
+%
+
+\newlength{\columnheight}
+\setlength{\columnheight}{90cm}                 % Wysokość sekcji na bloki (Więcej miejsca na tytuł i autorów)
+\renewcommand{\thetable}{}
+\def\andname{,}
+\authornote{}
+
+\renewcommand{\APACrefatitle}[2]{}
+\renewcommand{\bibliographytypesize}{\footnotesize} 
+\renewcommand{\APACrefYearMonthDay}[3]{%
+{\BBOP}{#1}
+{\BBCP}
+}
+
+\begin{document}
+
+\date{}
+
+\author{\large \underline{Jaros\l{}aw Chilimoniuk}\inst{1}, Micha\l{} Burdukiewicz\inst{2}, Katarzyna Sidorczuk\inst{1}, Stefan R\"o{}diger\inst{3} and Przemys\l{}aw Gagat\inst{1}*\\
+\bigskip
+\normaltext{*przemyslaw.gagat@uwr.edu.pl}}
+\justifying\institute{\small{\textsuperscript{1}Department of Bioinformatics and Genomics, University of Wroc\l{}aw, Wroc\l{}aw, POLAND
+\textsuperscript{2}Faculty of Mathematics and Information Science, Warsaw University of Technology, Warsaw, POLAND
+\textsuperscript{3}Faculty of Natural Sciences, Brandenburg University of Technology Cottbus-Senftenberg, Senftenberg, Germany
+}}
+
+\title{\huge AmpGram: a novel tool for prediction of antimicrobial peptides}
+
+\begin{frame}
+\begin{columns}
+\begin{column}{.48\textwidth}                               % szerokość kolumny lewej
+\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
+\begin{minipage}[T]{.95\textwidth}
+\parbox[t][\columnheight]{\textwidth}
+{
+
+% \begin{block}{Nazwa}
+% Tekst
+% \end{block}
+% \vfill
+
+\begin{block}{Introduction}
+
+\justifying
+{\bf Question}: Antimicrobial peptides (AMPs) are ancient and evolutionarily conserved molecules widespread in all living organisms that participate in host defense and/or microbial competition. Due to their positive charge, hydrophobicity and amphipathicity, they preferentially disrupt negatively-charged bacterial membranes. AMPs are considered an important alternative to traditional antibiotics, especially when the latter are drastically losing their effectiveness. Therefore, efficient computational tools for AMP prediction are essential to identify new AMP candidates without undertaking expensive experimental studies.
+
+{\bf Methods}: AmpGram is our novel tool for predicting AMPs based on the methodology that has already been used with success in our previous applications. It employes simplified alphabets to encode the information from highly variable AMPs into informative features suitable for machine learning, and n-gram analysis to reveal amino acid motifs associated with the presence or absence of antimicrobial properties.
+
+{\bf Results}: In order to test AmpGram performance, we benchmarked it against the state-of-the-art AMP classifiers, including AMPScanner 2.0, CAMPR3RF and CAMPR3SVM. AmpGram outperformed all of them in terms of AUC and specificity. Additionally, AmpGram provides a list of amino acid motifs associated with antimicrobial properties.
+
+{\bf Conclusions}: AmpGram is a novel tool for AMP prediction that outperforms all the existing tools. Moreover, it identifies amino acid motifs that can be used to study and design new AMPs. 
+
+\end{block}
+\vfill
+
+
+\begin{block}{Benchmark of AmpGram with cutting-edge classifiers}
+
+% \includegraphics[width=0.97\columnwidth]{data/bench_p.eps}
+
+<<echo = FALSE,message=FALSE,fig.align='center',fig.width=15,fig.height=10.5,warning=FALSE>>=
+
+library(tidyverse)
+library(ggplot2)
+source(file = "my_ggplot_theme.R")
+
+amp_bench <- read.csv("data/benchmark_results.csv", row.names = NULL)
+levels(amp_bench$variable) <- c("AUC", "Sensitivity", "Specificity")
+
+amp_bench[-c(1:3)] %>% 
+  group_by(software, variable) %>% 
+  summarise(value = mean(value)) %>% 
+  ggplot(aes(x = software, y = value, fill = software)) + 
+  geom_col() + facet_wrap(~variable) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  my_theme
+@
+
+\justifying
+AmpGram uses n-grams (amino acid motifs typical of AMPs), reduced amino acid alphabets (containing information about relationships between amino acids) and random forests (a machine learning method) as an AMP classification algorithm. The positive dataset, after CD-HIT reduction (90\%) \citep{fu_cd-hit_2012-1}, included 2463 experimentally validated AMP sequences retrieved from dbAMP database \citep{jhong_dbamp_2019}. AmpGram applies a methodology that has already been used with success in our previous studies \citep{burdukiewicz_amyloidogenic_2017-1, burdukiewicz_prediction_2018-1}.
+
+\end{block}
+\vfill
+
+
+\begin{block}{Generation of the negative dataset for prediction}
+
+\includegraphics[width=0.88\columnwidth]{data/negative_dataset.eps}
+
+\justifying
+The negative dataset (2463 sequences) was build using peptides extracted from cytoplasmic proteins, which are not antimicrobial, antibacterial, antifungal and antiviral, similar to datasets presented elsewhere \citep{gabere_empirical_2017} with the same length distribution as the sequences in the positive dataset.
+
+\end{block}
+\vfill
+}
+\end{minipage}
+\end{beamercolorbox}
+\end{column}
+
+
+%new column ------------------------------------------------------    
+
+\begin{column}{.48\textwidth}                                 % szerokość kolumny prawej
+\begin{beamercolorbox}[center,wd=\textwidth]{postercolumn}
+\begin{minipage}[T]{.95\textwidth}  
+\parbox[t][\columnheight]{\textwidth}
+{
+
+\begin{block}{AmpGram verification of AMP signal in mTPs, cTPs and SPs}
+
+\includegraphics[width=0.93\columnwidth]{data/AmpGram.eps}
+
+\justifying
+In order to check the AMP signal in mTPs and cTPs, Viridiplantae protein sequences were retrieved from the UniProt database \citep{uniprot_consortium_uniprot_2018} that were either experimentally verified (Experimental) or manually curated (Reviewed) to bear the appropriated presequences and localize to mitochondria and plastids, respectively. The mTPs and cTPs were next cut off from mature proteins. The final dataset included 134 cTPs. We used 295 Experimental and 4180 Reviewed SPs as a control also retrieved from the UniProt database \citep{uniprot_consortium_uniprot_2018}. 
+
+\end{block}
+\vfill
+
+\begin{block}{Model for evolution of protein import into bacteria-derived organellas}
+\center\includegraphics[width=0.50\columnwidth]{data/AMP2.png}
+
+\justifying
+AMPs greatly contributed to the establishment of mitochondria and plastids by facilitating endosymbiont gene transfer as a result of bacterial cell lysis (A). At some point, ingested bacteria resisted the host AMPs by their uptake using a specific transporter and proteolytic degradation (B). In the next evolutionary stage, the host genome underwent rearrangements that led to the fusion of AMP genes with other nuclear genes. As a result, nuclear-encoded proteins acquired cleavable TPs capable of directing them into bacteria-derived organelles along with mitochondrial and plastid translocase complexes that evolved from the specific transporters (C). The cell organelles are not in scale, the nucleus is marked in purple and a bacteria-derived organelle in green.
+
+\end{block}
+\vfill 
+\begin{block}{Funding}
+
+\justifying
+\small
+National Science Center 2017/26/D/NZ8/00444
+
+National Science Center 2018/31/N/NZ2/01338
+
+\end{block}
+\vfill 
+
+ \begin{block}{Bibliography}
+  \tiny{
+  \bibliographystyle{apalike}
+  \bibliography{AmpGram.bib}
+  }
+  \end{block}
+  \vfill
+}
+\end{minipage}
+\end{beamercolorbox}
+\end{column}
+\end{columns}  
+\end{frame}
+\end{document}
