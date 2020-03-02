@@ -108,7 +108,7 @@ amp_bench[-c(1:3)] %>%
 @
 
 \justifying
-AmpGram uses n-grams (amino acid motifs typical of AMPs), reduced amino acid alphabets (containing information about relationships between amino acids) and random forests (a machine learning method) as an AMP classification algorithm. The positive dataset, after CD-HIT reduction (90\%) \citep{fu_cd-hit_2012-1}, included 2463 experimentally validated AMP sequences retrieved from dbAMP database \citep{jhong_dbamp_2019}. AmpGram applies a methodology that has already been used with success in our previous studies \citep{burdukiewicz_amyloidogenic_2017-1, burdukiewicz_prediction_2018-1}.
+AmpGram uses n-grams (amino acid motifs typical of AMPs), reduced amino acid alphabets (containing information about relationships between amino acids) and random forests (a machine learning method) as an AMP classification algorithm. The positive dataset, after CD-HIT reduction (90\%) \break\citep{fu_cd-hit_2012-1}, included 2463 experimentally validated AMP sequences retrieved from dbAMP database \citep{jhong_dbamp_2019}. AmpGram applies a methodology that has already been used with success in our previous studies \citep{burdukiewicz_amyloidogenic_2017-1, burdukiewicz_prediction_2018-1}.
 
 \end{block}
 \vfill
